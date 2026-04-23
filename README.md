@@ -2,9 +2,9 @@
 
 # Bookly API
 
+![Tests](https://github.com/bernesdev/bookly-api/actions/workflows/tests.yml/badge.svg)
 ![NestJS](https://img.shields.io/badge/NestJS-11-red)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Architecture](https://img.shields.io/badge/Architecture-Feature--First-green)
 
 Bookly API is the backend service for the Bookly ecosystem. It provides endpoints for location search, accommodation catalog, and booking management using a modular NestJS architecture.
 
