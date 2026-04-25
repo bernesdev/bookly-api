@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 
-import { ServiceUnavailableException } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccommodationTestFactory } from '../../../test/factories/accommodation-test.factory';
 import { BookingTestFactory } from '../../../test/factories/booking-test.factory';
@@ -10,6 +10,7 @@ import { AccommodationService } from '../accommodation/accommodation.service';
 import { FIREBASE_ADMIN } from '../firebase/firebase.provider';
 import { BookingService } from './booking.service';
 import { BookingStatus, CreateBookingDto } from './dtos/booking.dto';
+import { BookingErrorHandler } from './exceptions/booking-error.handler';
 
 describe('BookingService', () => {
   let service: BookingService;
@@ -28,7 +29,7 @@ describe('BookingService', () => {
   let requestObj: Record<string, unknown>;
 
   beforeEach(async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
 
     cacheService = {
       get: jest.fn(),
@@ -61,6 +62,7 @@ describe('BookingService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BookingService,
+        BookingErrorHandler,
         { provide: CacheService, useValue: cacheService },
         { provide: AccommodationService, useValue: accommodationService },
         { provide: FIREBASE_ADMIN, useValue: firebaseAppMock },
@@ -113,7 +115,7 @@ describe('BookingService', () => {
       expect(result.accommodation.id).toBe(mockAccommodation.id);
     });
 
-    it('should throw ServiceUnavailableException if firestore throws generic error', async () => {
+    it('should throw InternalServerErrorException if firestore throws generic error', async () => {
       accommodationService.findOne.mockResolvedValue(
         AccommodationTestFactory.create(),
       );
@@ -129,7 +131,7 @@ describe('BookingService', () => {
       };
 
       await expect(service.create('user-123', dto)).rejects.toThrow(
-        ServiceUnavailableException,
+        InternalServerErrorException,
       );
     });
   });

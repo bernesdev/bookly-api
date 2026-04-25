@@ -22,8 +22,6 @@ describe('LocationService', () => {
   let requestObj: Record<string, unknown>;
 
   beforeEach(async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-
     httpService = {
       get: jest.fn(),
     } as unknown as jest.Mocked<HttpService>;
