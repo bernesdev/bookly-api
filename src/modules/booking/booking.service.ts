@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  Inject,
-  Injectable,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
 import * as admin from 'firebase-admin';
 import { PageMetaDto } from '../../common/dtos/page-meta.dto';
@@ -22,6 +17,7 @@ import {
   CreateBookingDto,
 } from './dtos/booking.dto';
 import { Booking } from './entities/booking.entity';
+import { BookingErrorHandler } from './exceptions/booking-error.handler';
 import { BookingMapper } from './mappers/booking.mapper';
 
 @Injectable()
@@ -33,6 +29,7 @@ export class BookingService {
     private readonly accommodationService: AccommodationService,
     @Inject(FIREBASE_ADMIN) private readonly firebase: admin.app.App,
     private readonly cacheService: CacheService,
+    private readonly bookingErrorHandler: BookingErrorHandler,
     @Inject('REQUEST') private request: Request,
   ) {}
 
@@ -67,13 +64,7 @@ export class BookingService {
         id: response.id,
       };
     } catch (error) {
-      console.error('Error creating booking:', error);
-
-      if (error instanceof HttpException) throw error;
-
-      throw new ServiceUnavailableException(
-        'Booking service is temporarily unavailable',
-      );
+      this.bookingErrorHandler.handle(error, 'creating booking');
     }
   }
 
@@ -102,8 +93,10 @@ export class BookingService {
           status === BookingStatus.ACTIVE ? '>=' : '<',
           new Date(),
         )
-        .orderBy('dates.checkOut', 'asc')
-        .orderBy(admin.firestore.FieldPath.documentId(), 'asc');
+        .orderBy(
+          'dates.checkOut',
+          status === BookingStatus.ACTIVE ? 'asc' : 'desc',
+        );
 
       if (cursor) {
         const decodedCursor = decodeCursor({
@@ -152,12 +145,7 @@ export class BookingService {
 
       return response;
     } catch (error) {
-      console.error('Error fetching bookings:', error);
-      if (error instanceof HttpException) throw error;
-
-      throw new ServiceUnavailableException(
-        'Booking service is temporarily unavailable',
-      );
+      this.bookingErrorHandler.handle(error, 'fetching bookings');
     }
   }
 
@@ -188,11 +176,7 @@ export class BookingService {
 
       return booking;
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-
-      throw new ServiceUnavailableException(
-        'Booking service is temporarily unavailable',
-      );
+      this.bookingErrorHandler.handle(error, 'fetching booking');
     }
   }
 
