@@ -104,7 +104,6 @@ export class LocationService {
 
       return location;
     } catch (error) {
-      console.error('Error fetching location by ID:', error);
       if (error instanceof HttpException) throw error;
 
       throw new ServiceUnavailableException(
