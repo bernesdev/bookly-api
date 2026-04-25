@@ -8,7 +8,7 @@
 
 Bookly API is the backend service for the Bookly ecosystem. It provides endpoints for location search, accommodation catalog, and booking management using a modular NestJS architecture.
 
-> ⚠️ This project is for demonstration and study purposes. No real reservations or payment transactions are processed.
+> ⚠️ This project is for **demonstration purposes only**. No real reservations or payment transactions are processed.
 
 ## Table of Contents
 
@@ -24,7 +24,6 @@ Bookly API is the backend service for the Bookly ecosystem. It provides endpoint
 - [Testing](#testing)
 - [Project Structure](#project-structure)
 - [Author](#author)
-- [License and Disclaimer](#license-and-disclaimer)
 
 ## Overview
 
@@ -221,7 +220,7 @@ src/
     booking/            # Booking feature (protected)
     firebase/           # Firebase provider/module
     location/           # Location and destination feature
-  platform/vercel/      # Serverless handler cache
+  platform/vercel/      # Vercel handler
 test/                   # End-to-end tests
 ```
 
